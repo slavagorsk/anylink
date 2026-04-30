@@ -81,9 +81,11 @@ func main() {
 	// channel receive if the first signal is consumed before Notify delivers it.
 	quit := make(chan os.Signal, 2)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+	sig := <-quit
 
-	base.Logger.Info("AnyLink server shutting down...")
+	// Log which signal triggered the shutdown — useful when tailing logs to
+	// distinguish a manual Ctrl-C from a systemd stop/restart.
+	base.Logger.Infof("AnyLink server shutting down (received signal: %s)...", sig)
 
 	// Graceful shutdown
 	server.StopServer()
