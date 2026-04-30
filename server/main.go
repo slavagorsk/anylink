@@ -74,7 +74,12 @@ func main() {
 	//
 	// NOTE(personal): Also excluding SIGUSR1/SIGUSR2 — I don't use live log
 	// rotation here; log rotation is handled externally by logrotate + copytruncate.
-	quit := make(chan os.Signal, 1)
+	//
+	// NOTE(personal): Using a buffer of 2 instead of 1 so that if both SIGINT
+	// and SIGTERM arrive in quick succession (e.g. double Ctrl-C), the second
+	// signal is queued rather than dropped, preventing a potential hang on the
+	// channel receive if the first signal is consumed before Notify delivers it.
+	quit := make(chan os.Signal, 2)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
