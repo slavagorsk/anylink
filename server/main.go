@@ -71,6 +71,9 @@ func main() {
 	// SIGHUP is intentionally excluded here — on some systems it can be sent
 	// unexpectedly (e.g. terminal disconnect) and cause unintended restarts.
 	// Use SIGTERM for clean shutdown from systemd/supervisord instead.
+	//
+	// NOTE(personal): Also excluding SIGUSR1/SIGUSR2 — I don't use live log
+	// rotation here; log rotation is handled externally by logrotate + copytruncate.
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
