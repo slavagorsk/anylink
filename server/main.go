@@ -43,7 +43,7 @@ func main() {
 	base.InitConfig(*configFile)
 	base.InitLog()
 
-	base.Logger.Infof("AnyLink starting, version: %s", Version)
+	base.Logger.Infof("AnyLink starting, version: %s, built: %s", Version, BuildDate)
 
 	// Initialize database
 	if err := dbdata.InitDb(); err != nil {
