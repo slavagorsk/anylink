@@ -66,10 +66,13 @@ func main() {
 
 	base.Logger.Info("AnyLink server started successfully")
 
-	// Wait for termination signal
-	// Also handle SIGHUP so the process can be cleanly managed by systemd/supervisord
+	// Wait for termination signal.
+	// SIGINT and SIGTERM trigger graceful shutdown.
+	// SIGHUP is intentionally excluded here — on some systems it can be sent
+	// unexpectedly (e.g. terminal disconnect) and cause unintended restarts.
+	// Use SIGTERM for clean shutdown from systemd/supervisord instead.
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
 	base.Logger.Info("AnyLink server shutting down...")
